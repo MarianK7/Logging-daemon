@@ -48,7 +48,19 @@ void print_most_frequent_message(struct message_frequency *message_freqs, int nu
             max_freq_index = i;
         }
     }
-    printf("\nMost frequent message: %s (frequency: %d)\n", message_freqs[max_freq_index].message, message_freqs[max_freq_index].frequency);
+
+    // Print the most frequent message stripped of the timestamp
+    char *msg = strstr(message_freqs[max_freq_index].message, ": "); // find the first occurrence of ": "
+    if (msg != NULL)
+    {
+        msg += 2; // move past ": "
+    }
+    else
+    {
+        msg = message_freqs[max_freq_index].message; // if no delimiter found, use the whole buffer as the message
+    }
+
+    printf("\nMost frequent message: %s (frequency: %d)\n", msg, message_freqs[max_freq_index].frequency);
 }
 
 void signal_handler(int signo)
@@ -110,6 +122,9 @@ int main(int argc, char *argv[])
             exit(1);
         }
 
+        // Add null terminator to the end of the message
+        buffer[len] = '\0';
+
         // Write the message to each file
         for (int i = 1; i < argc; i++)
         {
@@ -144,8 +159,6 @@ int main(int argc, char *argv[])
                 {
                     msg_arr = messages[i].message; // if no delimiter found, use the whole buffer as the message
                 }
-
-                //printf("Message in array %d: %s\n", i, msg_arr);
 
                 if (strcmp(msg_arr, msg) == 0)
                 {
